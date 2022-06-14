@@ -1,0 +1,50 @@
+version: '3.7'
+
+services:
+  drupal_db:
+    image: mysql:5.7
+    command: mysqld --sql_mode="" --general-log=1 --general-log-file=/var/log/mysql/general-log.log
+    container_name: drupal_db
+    ports:
+     - "3306:3306"
+    volumes:
+     - ./database:/docker-entrypoint-initdb.d
+    environment:
+      MYSQL_ROOT_PASSWORD: changeme
+      MYSQL_USER: usr_drupal
+      MYSQL_PASSWORD: changeme
+      MYSQL_DATABASE: drupal
+      TZ: America/Lima
+    networks:
+      - drupal_network
+    healthcheck:
+          test: "cat /var/log/mysql/general-log.log | grep \"root@localhost on  using Socket\""
+          interval: 1s
+          retries: 120
+
+  drupal:
+    build: .
+    image: drupal
+    container_name: drupal
+    ports:
+     - "8080:80"
+    environment:
+      DATABASE_HOST: host.docker.internal
+      DATABASE_USERNAME: usr_drupal
+      DATABASE_PASSWORD: changeme
+      DATABASE_PORT: 3306
+      DATABASE_NAME: drupal
+      ENABLE_VERBOSE_LOG: "true"
+      HASH_SALT: "changeme"
+      TZ: America/Lima
+    networks:
+      - drupal_network
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+        drupal_db:
+            condition: service_healthy
+
+networks:
+  drupal_network:
+    driver: bridge
