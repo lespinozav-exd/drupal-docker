@@ -45,6 +45,8 @@ RUN ls -la /var/www/html/
 RUN mv ./settings.php /var/www/html/web/sites/default/settings.php
 
 # Install Composer dependencies
+RUN composer config --no-plugins allow-plugins.drupal/core-composer-scaffold true ## LEV
+RUN composer config --no-plugins allow-plugins.drupal/core-project-message true ## LEV
 RUN composer install --no-dev && composer clear-cache
 
 # Install Drush
