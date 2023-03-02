@@ -82,7 +82,7 @@ docker run -d --name wordpress -it --rm -p 80:80 \
 
 Finally go to `http://localhost:8080` and enter these credentials:
 
-- user: admin
+- user: usil_admin
 - password: 123456
 
 Don't forget to change the password. You should see something like this:
